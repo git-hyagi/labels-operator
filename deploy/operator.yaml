@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: labels-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: labels-operator
+  template:
+    metadata:
+      labels:
+        name: labels-operator
+    spec:
+      serviceAccountName: labels-operator
+      containers:
+        - name: labels-operator
+          image: image-registry.openshift-image-registry.svc:5000/labels-operator/labels:v1
+          command:
+          - labels-operator
+          imagePullPolicy: Always
+          env:
+            - name: WATCH_NAMESPACE
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "labels-operator"

@@ -1,0 +1,10 @@
+apiVersion: lab.local/v1
+kind: Label
+metadata:
+  name: labels-operator
+  namespace: labels-operator
+spec:
+  projects:
+  - test
+  - test2
+  - labels-operator
