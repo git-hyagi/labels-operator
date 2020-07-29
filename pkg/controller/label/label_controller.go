@@ -78,8 +78,25 @@ func (r *ReconcileLabel) Reconcile(request reconcile.Request) (reconcile.Result,
 
 	// go through all projects defined on the CRD
 	for _, namespace := range instance.Spec.Projects {
+
+		// check if namespace declared in ForceNetPol exists
+		nsList := &corev1.NamespaceList{}
+		err := r.client.List(context.TODO(), nsList)
+		foundNS := false
+		for _, namespaces := range nsList.Items {
+			if namespaces.Name == namespace {
+				foundNS = true
+				break
+			}
+		}
+
+		// if the namespace is not found, just skip the rest of loop instructions (do nothing for this namespace)
+		if !foundNS {
+			continue
+		}
+
 		podList := &corev1.PodList{}
-		err := r.client.List(context.TODO(), podList, client.InNamespace(namespace))
+		err = r.client.List(context.TODO(), podList, client.InNamespace(namespace))
 		if err != nil {
 			return reconcile.Result{}, err
 		}
